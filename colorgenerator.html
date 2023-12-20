@@ -1,0 +1,199 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+  <link rel="preconnect" href="https://fonts.gstatic.com">
+  <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: Rethink Sans, sans-serif;
+      background-color: #f3f3f3;
+    }
+
+    .container {
+      padding: 30px 15px;
+      margin: 0 auto;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .gradient-box {
+      width: calc(100% - 60px);
+      height: 550px;
+      margin: 0 auto 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #ffffff;
+      color: #000000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Rethink Sans', sans-serif;
+      font-weight: 700;
+      font-size: 60px;
+    }
+
+    .contrast-error {
+      color: red;
+    }
+
+    .controls {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 16px;
+      margin-bottom: 16px;
+      width: 100%;
+    }
+
+    .circle-btn {
+      width: 24px;
+      height: 24px;
+      background-color: white;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    input[type="color"] {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      opacity: 0;
+      cursor: pointer;
+    }
+
+    .color-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      position: relative;
+    }
+
+    #color1-btn {
+      background-color: #000000;
+    }
+
+    #color2-btn {
+      background-color: #ffffff;
+    }
+
+    @media (max-width: 768px) {
+      .container {
+        width: 90%;
+      }
+      .gradient-box {
+        width: 100%;
+        height: 500px;
+        font-size: calc(2em + 1vmin);
+      }
+    }
+
+    @media (min-width: 769px) {
+      .gradient-box {
+        height: 550px; /* Adjust this height as needed for desktop */
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <div class="gradient-box" id="colorCombos">
+      This is fine.
+    </div>
+    <div class="controls">
+      <div class="circle-btn" id="refresh" style="color: black">&#8634;</div>
+      <div class="color-btn" id="color1-btn">
+        <input type="color" id="color1" value="#000000">
+      </div>
+      <div class="color-btn" id="color2-btn">
+        <input type="color" id="color2" value="#ffffff">
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/chroma-js/2.1.2/chroma.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script>
+    $(document).ready(function () {
+      const contrastThreshold = 4.5;
+      let color1 = '#000000'; // Store initial colors of buttons
+      let color2 = '#ffffff';
+
+      function updateColorCombos() {
+        let textColor, bgColor, contrast;
+
+        do {
+          textColor = chroma.random().hex();
+          bgColor = chroma.random().hex();
+          contrast = chroma.contrast(textColor, bgColor);
+        } while (contrast < contrastThreshold);
+
+        $('.gradient-box').css({
+          'background-color': bgColor,
+          'color': textColor
+        });
+
+        if (contrast < contrastThreshold) {
+          $('.gradient-box').text('This is not fine.').addClass('contrast-error');
+        } else {
+          $('.gradient-box').text('This is fine.').removeClass('contrast-error');
+        }
+
+        // Update color buttons with current colors
+        color1 = textColor;
+        color2 = bgColor;
+        $('#color1-btn').css('background-color', color1);
+        $('#color2-btn').css('background-color', color2);
+        $('#color1').val(color1);
+        $('#color2').val(color2);
+      }
+
+      $('#refresh').click(function () {
+        updateColorCombos();
+      });
+
+      $('#color1, #color2').on('input', function () {
+        const newColor1 = $('#color1').val();
+        const newColor2 = $('#color2').val();
+
+        $('.gradient-box').css({
+          'background-color': newColor2,
+          'color': newColor1
+        });
+
+        const contrast = chroma.contrast(newColor1, newColor2);
+
+        if (contrast < contrastThreshold) {
+          $('.gradient-box').text('This is not fine.').addClass('contrast-error');
+        } else {
+          $('.gradient-box').text('This is fine.').removeClass('contrast-error');
+        }
+
+        // Update color buttons only if a change is made
+        if (newColor1 !== color1) {
+          color1 = newColor1;
+          $('#color1-btn').css('background-color', color1);
+        }
+        if (newColor2 !== color2) {
+          color2 = newColor2;
+          $('#color2-btn').css('background-color', color2);
+        }
+      });
+
+      $('body').css('background-color', '#f3f3f3');
+
+      updateColorCombos();
+    });
+  </script>
+</body>
+</html>
