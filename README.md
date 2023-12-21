@@ -16,4 +16,3 @@
 <li>Chroma.js (Library for color manipulation)</li>
 
   <h3>☼ Have fun!</h3>
-</body>
