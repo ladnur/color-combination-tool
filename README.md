@@ -14,6 +14,6 @@
 <li>CSS</li>
 <li>JavaScript</li>
 <li>jQuery</li>
-<li>Chroma.js (Library for color manipulation)</li>
+<li>Chroma.js</li>
 
   <h3>☼ Have fun!</h3>
