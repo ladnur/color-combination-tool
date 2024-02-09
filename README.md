@@ -1,6 +1,6 @@
 <h1>a simple color combination tool ☺︎</h1>
   
-  <p>This is a tool to help you find random color combinations that <strong>work</strong>. This tool pairs colors that pass WCAG at an AA level, and pass at an AAA level when used with type 18pt or higher.You can preview it <a href="https://ladnur.github.io/color-combination-tool/colorgenerator.html">here</a>.</p>
+  <p>This is a tool to help you find random color combinations that <strong>work</strong>. This tool pairs colors that pass WCAG at an AA level, and pass at an AAA level when used with type 18pt or higher. You can preview it <a href="https://ladnur.github.io/color-combination-tool/colorgenerator.html">here</a>.</p>
   <br>
   
   <h2>How to Use</h2>
