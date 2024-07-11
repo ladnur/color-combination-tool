@@ -1,23 +1,23 @@
+<!DOCTYPE html>
 <html lang="en">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Color Contrast Checker</title>
   <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
   <link rel="preconnect" href="https://fonts.gstatic.com">
   <link href="https://fonts.googleapis.com/css2?family=Rethink+Sans:wght@700&display=swap" rel="stylesheet">
   <style>
     body {
-      font-family: Rethink Sans, sans-serif;
+      font-family: 'Rethink Sans', sans-serif;
       background-color: #f3f3f3;
     }
-
     .container {
       padding: 30px 15px;
       margin: 0 auto;
       max-width: 100%;
       box-sizing: border-box;
     }
-
     .gradient-box {
       width: calc(100% - 60px);
       height: 550px;
@@ -29,15 +29,12 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      font-family: 'Rethink Sans', sans-serif;
       font-weight: 700;
       font-size: 60px;
     }
-
     .contrast-error {
       color: red;
     }
-
     .controls {
       display: flex;
       justify-content: center;
@@ -46,7 +43,6 @@
       margin-bottom: 16px;
       width: 100%;
     }
-
     .circle-btn {
       width: 24px;
       height: 24px;
@@ -58,7 +54,14 @@
       justify-content: center;
       align-items: center;
     }
-
+    .color-btn {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      border: 3px solid white;
+      cursor: pointer;
+      position: relative;
+    }
     input[type="color"] {
       width: 100%;
       height: 100%;
@@ -68,39 +71,27 @@
       opacity: 0;
       cursor: pointer;
     }
-
-    .color-btn {
-      width: 24px;
-      height: 24px;
-      border-radius: 50%;
-      border: 3px solid white;
-      cursor: pointer;
-      position: relative;
+    input[type="text"] {
+      width: 80px;
+      text-align: center;
+      margin: 0 5px;
+      border: 1px solid #ccc;
+      border-radius: 4px;
+      padding: 2px;
     }
-
-    #color1-btn {
-      background-color: #000000;
-    }
-
-    #color2-btn {
-      background-color: #ffffff;
-    }
+    #color1-btn { background-color: #000000; }
+    #color2-btn { background-color: #ffffff; }
 
     @media (max-width: 768px) {
-      .container {
-        width: 90%;
-      }
+      .container { width: 90%; }
       .gradient-box {
         width: 100%;
         height: 500px;
         font-size: calc(2em + 1vmin);
       }
     }
-
     @media (min-width: 769px) {
-      .gradient-box {
-        height: 550px;
-      }
+      .gradient-box { height: 550px; }
     }
   </style>
 </head>
@@ -114,9 +105,11 @@
       <div class="color-btn" id="color1-btn">
         <input type="color" id="color1" value="#000000">
       </div>
+      <input type="text" id="color1-text" value="#000000">
       <div class="color-btn" id="color2-btn">
         <input type="color" id="color2" value="#ffffff">
       </div>
+      <input type="text" id="color2-text" value="#ffffff">
     </div>
   </div>
 
@@ -125,71 +118,61 @@
   <script>
     $(document).ready(function () {
       const contrastThreshold = 4.5;
-      let color1 = '#000000'; // Store initial colors of buttons
+      let color1 = '#000000';
       let color2 = '#ffffff';
 
       function updateColorCombos() {
-        let textColor, bgColor, contrast;
-
         do {
-          textColor = chroma.random().hex();
-          bgColor = chroma.random().hex();
-          contrast = chroma.contrast(textColor, bgColor);
-        } while (contrast < contrastThreshold);
+          color1 = chroma.random().hex();
+          color2 = chroma.random().hex();
+        } while (chroma.contrast(color1, color2) < contrastThreshold);
 
+        updateColors();
+      }
+
+      function updateColors() {
         $('.gradient-box').css({
-          'background-color': bgColor,
-          'color': textColor
+          'background-color': color2,
+          'color': color1
         });
 
+        const contrast = chroma.contrast(color1, color2);
         if (contrast < contrastThreshold) {
           $('.gradient-box').text('This is not fine.').addClass('contrast-error');
         } else {
           $('.gradient-box').text('This is fine.').removeClass('contrast-error');
         }
 
-        // Update color buttons with current colors
-        color1 = textColor;
-        color2 = bgColor;
         $('#color1-btn').css('background-color', color1);
         $('#color2-btn').css('background-color', color2);
         $('#color1').val(color1);
         $('#color2').val(color2);
+        $('#color1-text').val(color1);
+        $('#color2-text').val(color2);
       }
 
-      $('#refresh').click(function () {
-        updateColorCombos();
-      });
+      $('#refresh').click(updateColorCombos);
 
       $('#color1, #color2').on('input', function () {
-        const newColor1 = $('#color1').val();
-        const newColor2 = $('#color2').val();
-
-        $('.gradient-box').css({
-          'background-color': newColor2,
-          'color': newColor1
-        });
-
-        const contrast = chroma.contrast(newColor1, newColor2);
-
-        if (contrast < contrastThreshold) {
-          $('.gradient-box').text('This is not fine.').addClass('contrast-error');
-        } else {
-          $('.gradient-box').text('This is fine.').removeClass('contrast-error');
-        }
-
-        // Update color buttons only if a change is made
-        if (newColor1 !== color1) {
-          color1 = newColor1;
-          $('#color1-btn').css('background-color', color1);
-        }
-        if (newColor2 !== color2) {
-          color2 = newColor2;
-          $('#color2-btn').css('background-color', color2);
-        }
+        color1 = $('#color1').val();
+        color2 = $('#color2').val();
+        updateColors();
       });
 
-      $('body').css('background-color', '#f3f3f3');
+      $('#color1-text, #color2-text').on('input', function() {
+        const id = $(this).attr('id');
+        const colorValue = $(this).val();
+        if (/^#[0-9A-F]{6}$/i.test(colorValue)) {
+          if (id === 'color1-text') {
+            color1 = colorValue;
+            $('#color1').val(color1);
+          } else {
+            color2 = colorValue;
+            $('#color2').val(color2);
+          }
+          updateColors();
+        }
+      });
 
       updateColorCombos();
     });
